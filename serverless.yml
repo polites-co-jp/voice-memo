@@ -1,0 +1,41 @@
+service: voice-memo-automation
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  environment:
+    DISCORD_PUBLIC_KEY: ${env:DISCORD_PUBLIC_KEY}
+    DISCORD_TOKEN: ${env:DISCORD_TOKEN}
+    GEMINI_API_KEY: ${env:GEMINI_API_KEY}
+    GITHUB_TOKEN: ${env:GITHUB_TOKEN}
+    TARGET_REPO: ${env:TARGET_REPO}
+    TRANSCRIPT_CHANNEL_ID: ${env:TRANSCRIPT_CHANNEL_ID, ''} 
+    SUMMARY_CHANNEL_ID: ${env:SUMMARY_CHANNEL_ID, ''}
+  
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource: "*"
+
+functions:
+  interaction:
+    handler: handler.interaction
+    events:
+      - httpApi:
+          path: /interactions
+          method: post
+
+  worker:
+    handler: handler.worker
+    timeout: 300 # 5分 (Gemini処理のため長めに設定)
+
+plugins:
+  - serverless-dotenv-plugin
+
+useDotenv: true

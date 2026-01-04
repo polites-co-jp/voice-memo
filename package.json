@@ -1,0 +1,22 @@
+{
+  "name": "voice-memo-automation",
+  "version": "1.0.0",
+  "description": "Discord voice memo automation with Gemini and GitHub",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "serverless deploy"
+  },
+  "dependencies": {
+    "@aws-sdk/client-lambda": "^3.962.0",
+    "@google/generative-ai": "^0.1.0",
+    "@octokit/rest": "^20.0.0",
+    "axios": "^1.6.0",
+    "discord-interactions": "^3.4.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "serverless": "^3.0.0",
+    "serverless-dotenv-plugin": "^6.0.0"
+  }
+}
