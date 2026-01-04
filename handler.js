@@ -228,16 +228,20 @@ async function processVoiceMemo(fileUrl, interactionToken, applicationId, channe
     keywords = keywordText.split(/[,、\n\r]+/).map(k => k.trim()).filter(k => k && k !== '-');
   }
   
-  const dateStr = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
+  const now = new Date();
+  const dateStr = now.toISOString().replace(/[-:T.]/g, '').slice(0, 14);
+  const year = now.getFullYear().toString();
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  
   const baseFilename = `${dateStr}_${title.replace(/[\\/:*?"<>|]/g, '_')}.md`;
-  const summaryPath = `音声メモ/${baseFilename}`;
+  const summaryPath = `音声メモ/${year}/${month}/${baseFilename}`;
 
-  // 本文内のキーワード領域をリンクに書き換え
+  // 本文内のキーワード領域をリンクに書き換え（年月フォルダを考慮して相対パス調整）
   if (keywordMatch) {
     const originalKeywordBlock = keywordMatch[0];
     const linkedKeywords = keywords.map(k => {
       const kwCleanup = k.replace(/[\\/:*?"<>|]/g, '_');
-      return `[${k}](../キーワード/${kwCleanup}.md)`;
+      return `[${k}](../../../キーワード/${kwCleanup}.md)`;  // 音声メモ/YYYY/MM/ から キーワード/ へ
     }).join(', ');
     const newKeywordBlock = `## キーワード\n${linkedKeywords}\n\n`;
     text = text.replace(originalKeywordBlock, newKeywordBlock);
@@ -261,7 +265,7 @@ async function processVoiceMemo(fileUrl, interactionToken, applicationId, channe
     if (!kwCleanup) continue;
     
     const kwPath = `キーワード/${kwCleanup}.md`;
-    const link = `\n- [${baseFilename}](../音声メモ/${baseFilename})`;
+    const link = `\n- [${baseFilename}](../音声メモ/${year}/${month}/${baseFilename})`;  // 年月フォルダ含むパス
     
     try {
       let newC = '';
